@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Data
 @Component
-public class UrlMapper{
+public class UrlOptionalMapper {
     public Url optionalToUrl(Optional<Url> optional) throws Exception{
         if(optional.isEmpty()){
             throw new Exception("expected Optional<Url>, but its empty");

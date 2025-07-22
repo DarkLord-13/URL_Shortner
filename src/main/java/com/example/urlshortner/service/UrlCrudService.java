@@ -1,13 +1,13 @@
 package com.example.urlshortner.service;
 
+import com.example.urlshortner.dto.UrlDto;
 import com.example.urlshortner.entity.Url;
-import com.example.urlshortner.mapper.UrlMapper;
+import com.example.urlshortner.mapper.UrlDtoMapper;
 import com.example.urlshortner.repository.UrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class UrlCrudService{
@@ -16,49 +16,49 @@ public class UrlCrudService{
     private UrlRepository repo;
 
     @Autowired
-    private UrlMapper urlMapper;
+    private UrlDtoMapper urlDtoMapper;
 
-    private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int CODE_LENGTH = 6;
-    private static final Random random = new Random();
-
-    public Url shortenUrl(String longUrl){
+    public UrlDto shortenUrl(String longUrl){
         Optional<Url> existing = repo.findByUrl(longUrl);
         if(existing.isPresent()){
             throw new IllegalArgumentException("url's shortened version already exists");
         }
 
-        String shortCode = generateShortCode();
+        String shortCode = HelperService.generateShortCode();
 
         Url url = new Url(longUrl, shortCode);
 
         repo.save(url);
 
-        return url;
+        return urlDtoMapper.urlToDto(url);
     }
 
-    public Url getOriginalUrl(String shortCode) throws Exception{
+    public UrlDto getOriginalUrl(String shortCode) throws Exception{
         Optional<Url> existing = repo.findByShortCode(shortCode);
         if(existing.isEmpty()){
             throw new IllegalArgumentException("no url exists for this short code");
         }
 
-        return urlMapper.optionalToUrl(existing);
+        Url url = existing.get();
+
+        HelperService.increaseUrlVisitCount(url);
+        repo.save(url);
+
+        return urlDtoMapper.urlToDto(url);
     }
 
-    public Url updateShortCode(String longUrl, String shortCode) throws Exception{
+    public UrlDto updateShortCode(String longUrl, String shortCode) throws Exception{
         Optional<Url> existing = repo.findByShortCode(shortCode);
 
         if(existing.isEmpty()){
             throw new Exception("shortcode must exist already in order to be updated");
         }
 
-        Url url = urlMapper.optionalToUrl(existing);
+        Url url = existing.get();
         url.setUrl(longUrl);
-
         repo.save(url);
 
-        return url;
+        return urlDtoMapper.urlToDto(url);
     }
 
     public void deleteUrl(String shortCode) throws Exception{
@@ -69,16 +69,5 @@ public class UrlCrudService{
         }
 
         repo.deleteById(existing.get().getId());
-    }
-
-    public static String generateShortCode(){
-        StringBuilder sb = new StringBuilder();
-
-        for(int i=0; i<CODE_LENGTH; i++){
-            int index = random.nextInt(CHARACTERS.length());
-            sb.append(CHARACTERS.charAt(index));
-        }
-
-        return sb.toString();
     }
 }

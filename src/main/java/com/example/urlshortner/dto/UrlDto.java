@@ -1,16 +1,19 @@
 package com.example.urlshortner.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Data
 public class UrlDto{
     private Long id;
     private String url;
     private String shortCode;
-    private String createdAt;
-    private String updatedAt;
+    private String urlCreatedAt;
+    private String urlUpdatedAt;
+
+    public UrlDto() {}
+
+    public UrlDto(String url){
+        this.url = url;
+    }
 }

@@ -10,7 +10,7 @@ public class Url{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Column(name = "url", nullable = false, unique = true)
     private String url;
@@ -19,10 +19,13 @@ public class Url{
     private String shortCode;
 
     @Column(name = "url_created_at", nullable = false, updatable = false)
-    private String urlCreatedAt =java.time.LocalDateTime.now().toString();
+    private String urlCreatedAt = java.time.LocalDateTime.now().toString();
 
     @Column(name = "url_updated_at", nullable = false)
-    private String urlUpdatedAt =java.time.LocalDateTime.now().toString();
+    private String urlUpdatedAt = java.time.LocalDateTime.now().toString();
+
+    @Column(name = "get_count", nullable = false)
+    private long getCount = 0;
 
     public Url(String longUrl, String shortCode){
         this.url = longUrl;

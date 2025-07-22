@@ -1,6 +1,6 @@
 package com.example.urlshortner.controller;
 
-import com.example.urlshortner.entity.Url;
+import com.example.urlshortner.dto.UrlDto;
 import com.example.urlshortner.service.UrlCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +15,9 @@ public class UrlCrudController{
     UrlCrudService urlCrudService;
 
     @PostMapping
-    public ResponseEntity<?> shortenUrl(@RequestBody String longUrl){
+    public ResponseEntity<?> shortenUrl(@RequestBody UrlDto urlDto){
         try{
-            Url url = urlCrudService.shortenUrl(longUrl);
-            return new ResponseEntity<>(url, HttpStatus.OK);
+            return new ResponseEntity<>(urlCrudService.shortenUrl(urlDto.getUrl()), HttpStatus.OK);
         }
         catch(Exception e){
             return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
@@ -36,9 +35,9 @@ public class UrlCrudController{
     }
 
     @PutMapping("/{shortCode}")
-    public ResponseEntity<?> updateUrl(@RequestBody String longUrl, @PathVariable("shortCode") String shortCode){
+    public ResponseEntity<?> updateUrl(@RequestBody UrlDto urlDto, @PathVariable("shortCode") String shortCode){
         try{
-            return new ResponseEntity<>(urlCrudService.updateShortCode(longUrl, shortCode), HttpStatus.OK);
+            return new ResponseEntity<>(urlCrudService.updateShortCode(urlDto.getUrl(), shortCode), HttpStatus.OK);
         }
         catch(Exception e){
             return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
