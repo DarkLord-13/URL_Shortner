@@ -17,7 +17,12 @@ public class UrlCrudController{
     @PostMapping
     public ResponseEntity<?> shortenUrl(@RequestBody UrlDto urlDto){
         try{
-            return new ResponseEntity<>(urlCrudService.shortenUrl(urlDto.getUrl()), HttpStatus.OK);
+            if(urlDto.getShortCode() != null){
+                return new ResponseEntity<>(urlCrudService.shortenUrl(urlDto.getUrl(), urlDto.getShortCode()), HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity<>(urlCrudService.shortenUrl(urlDto.getUrl()), HttpStatus.OK);
+            }
         }
         catch(Exception e){
             return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);

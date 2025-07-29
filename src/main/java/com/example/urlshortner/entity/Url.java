@@ -27,6 +27,9 @@ public class Url{
     @Column(name = "get_count", nullable = false)
     private long getCount = 0;
 
+    @Column(name = "url_qr_image", columnDefinition = "BLOB")
+    private byte[] urlQRImage;
+
     public Url(String longUrl, String shortCode){
         this.url = longUrl;
         this.shortCode = shortCode;

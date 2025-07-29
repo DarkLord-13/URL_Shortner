@@ -33,6 +33,20 @@ public class UrlCrudService{
         return urlDtoMapper.urlToDto(url);
     }
 
+    public UrlDto shortenUrl(String longUrl, String shortCode){
+        Optional<Url> existing = repo.findByUrl(longUrl);
+
+        if(existing.isPresent() || repo.findByShortCode(shortCode).isPresent()){
+            throw new IllegalArgumentException("url's shortened version already exists");
+        }
+
+        Url url = new Url(longUrl, shortCode);
+
+        repo.save(url);
+
+        return urlDtoMapper.urlToDto(url);
+    }
+
     public UrlDto getOriginalUrl(String shortCode) throws Exception{
         Optional<Url> existing = repo.findByShortCode(shortCode);
         if(existing.isEmpty()){
@@ -53,9 +67,13 @@ public class UrlCrudService{
         if(existing.isEmpty()){
             throw new Exception("shortcode must exist already in order to be updated");
         }
+        else if(repo.findByUrl(longUrl).isPresent()){
+            throw new Exception("this longurl is already mapped to someone else, please select another longurl");
+        }
 
         Url url = existing.get();
         url.setUrl(longUrl);
+        url.setUrlQRImage(UrlQrService.generateQr(longUrl));
         repo.save(url);
 
         return urlDtoMapper.urlToDto(url);
